@@ -1,3 +1,13 @@
 h1 {
-     font-size: 50px; color: blue; 
+    font-size: 50px;
+    color: blue;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+}
+
+input, select {
+    margin-left: 5px;
 }

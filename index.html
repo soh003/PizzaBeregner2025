@@ -1,30 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="da">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!--Import styles-->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Opskrift Beregner</title>
     <link rel="stylesheet" href="./css/styles.css" />
-    <title>Vue Template</title>
-    <!--import Vue.js-->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 </head>
 <body>
-    <div id="app"> 
-        <div class="nav-bar"></div>
-    
-        <h1>{{intro}}</h1>
+    <div id="app">
+        <h1>{{ intro }}</h1>
 
+        <div>
+            <label>
+                Antal pizzaer:
+                <input type="number" min="1" step="1" v-model.number="n" />
+            </label>
+        </div>
+
+        <div>
+            <label>
+                Størrelse:
+                <select v-model="size">
+                    <option value="13">13"</option>
+                    <option value="16">16"</option>
+                    <option value="18">18"</option>
+                </select>
+            </label>
+        </div>
+
+        <div>
+            <label>
+                Hydrering (%):
+                <input type="number" min="45" max="85" step="0.1" v-model.number="hydration" />
+            </label>
+        </div>
+
+        <div>
+            <label>
+                Hævemiddel:
+                <select v-model="yeastType">
+                    <option value="dry">Tørgær (0,10%)</option>
+                    <option value="fresh">Frisk gær (0,25%)</option>
+                    <option value="sourdough">Surdej (150 g/kg mel)</option>
+                </select>
+            </label>
+        </div>
+
+        <h2>Din Opskrift</h2>
+        <p>Dejkuglevægt: {{ ballWeight }} g</p>
+        <p>Total dej: {{ totalDough.toFixed(1) }} g</p>
+        <ul>
+            <li>Mel: {{ flour.toFixed(1) }} g</li>
+            <li>Vand: {{ water.toFixed(1) }} g</li>
+            <li>Salt: {{ saltG.toFixed(1) }} g</li>
+            <li v-if="yeastG > 0">
+                {{ yeastType === 'sourdough' ? 'Surdej' : 'Gær' }}: {{ yeastG.toFixed(2) }} g
+            </li>
+        </ul>
+
+        <h3>Pr. dejkugle</h3>
+        <ul>
+            <li>Mel: {{ (flour / n).toFixed(1) }} g</li>
+            <li>Vand: {{ (water / n).toFixed(1) }} g</li>
+            <li>Salt: {{ (saltG / n).toFixed(1) }} g</li>
+            <li v-if="yeastG > 0">
+                {{ yeastType === 'sourdough' ? 'Surdej' : 'Gær' }}: {{ (yeastG / n).toFixed(2) }} g
+            </li>
+        </ul>
     </div>
-    
-<!--Import App-->
-<script src="./js/main.js"></script>
 
-<!--Mount App-->
-    <script>
-    const mountedApp = app.mount('#app')
-    </script>
-    
+    <script src="./js/main.js"></script>
 </body>
 </html>
