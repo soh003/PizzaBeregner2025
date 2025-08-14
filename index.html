@@ -6,59 +6,190 @@
     <title>Opskrift Beregner</title>
     <link rel="stylesheet" href="./css/styles.css" />
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
-<body>
-    <div id="app">
-        <h1>{{ intro }}</h1>
+<body class ="bg-light">
+    <div id="app" class="container py-4">
+        
+        
+        <header class="py-3 mb-4 custom-hero rounded-3">
+            <div class="container text-center">
+                <h1 class="display-4 fw-bold"><img src="\img/pizzalogo.png" alt="Pizza Logo" class="img-fluid mt-3" style="max-height: 80px;"> Din Pizza Beregner</h1>
+                
+            </div>
+        </header>
 
-        <div>
-            <label>
-                Antal pizzaer:
-                <input type="number" min="1" step="1" v-model.number="n" />
-            </label>
-        </div>
-
-        <div>
-            <label>
-                Størrelse:
-                <select v-model="size">
-                    <option value="13">13"</option>
-                    <option value="16">16"</option>
-                    <option value="18">18"</option>
-                </select>
-            </label>
-        </div>
-
-        <div>
-            <label>
-                Hydrering (%):
-                <input type="number" min="45" max="85" step="0.1" v-model.number="hydration" />
-            </label>
-        </div>
-
-        <div>
-            <label>
-                Hævemiddel:
-                <select v-model="yeastType">
-                    <option value="dry">Tørgær (0,10%)</option>
-                    <option value="fresh">Frisk gær (0,25%)</option>
-                    <option value="sourdough">Surdej (150 g/kg mel)</option>
-                </select>
-            </label>
-        </div>
-
-        <h2>Din Opskrift</h2>
-        <p>Dejkuglevægt: {{ ballWeight }} g</p>
-        <p>Total dej: {{ totalDough.toFixed(1) }} g</p>
-        <ul>
-            <li>Mel: {{ flour.toFixed(1) }} g</li>
-            <li>Vand: {{ water.toFixed(1) }} g</li>
-            <li>Salt: {{ saltG.toFixed(1) }} g</li>
-            <li v-if="yeastG > 0">
-                {{ yeastType === 'sourdough' ? 'Surdej' : 'Gær' }}: {{ yeastG.toFixed(2) }} g
-            </li>
+        <!-- Faner -->
+        <ul class="nav nav-tabs mb-3">
+        <li class="nav-item">
+            <button class="nav-link" :class="{ active: activeTab==='calc' }" @click="activeTab='calc'">
+            Beregner
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" :class="{ active: activeTab==='info' }" @click="activeTab='info'">
+            Hvad betyder valgene?
+            </button>
+        </li>
+        <li class="nav-item">
+            <button class="nav-link" :class="{ active: activeTab==='info' }" @click="activeTab='ferment'">
+            Valg af fermentering
+            </button>
+        </li>
         </ul>
 
+        <div v-show="activeTab==='calc'">
+
+            <div class="card p-4 shadow-sm mb-4">
+                <h2 class="h5 mb-3">Indtast data</h2>
+
+
+                <div>
+                    <label>
+                        Antal pizzaer:
+                        <input type="number" min="1" step="1" v-model.number="n" />
+                    </label>
+                </div>
+
+                <div>
+                    <label>
+                        Størrelse:
+                        <select v-model="size">
+                            <option value="13">13"</option>
+                            <option value="16">16"</option>
+                            <option value="18">18"</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div>
+                    <label>
+                        Hydrering (%):
+                        <input type="number" min="45" max="85" step="0.1" v-model.number="hydration" />
+                    </label>
+                </div>
+
+                <div>
+                    <label>
+                        Hævemiddel:
+                        <select v-model="yeastType">
+                            <option value="dry">Tørgær (0,10%)</option>
+                            <option value="fresh">Frisk gær (0,25%)</option>
+                            <option value="sourdough">Surdej (150 g/kg mel)</option>
+                        </select>
+                    </label>
+                </div>
+            </div>
+
+            <div class="card p-4 shadow-sm mb-4">
+                <h2>Din Opskrift</h2>
+                <p>Dejkuglevægt: {{ ballWeight }} g</p>
+                <p>Total dej: {{ totalDough.toFixed(1) }} g</p>
+                <ul>
+                    <li>Mel: {{ flour.toFixed(1) }} g</li>
+                    <li>Vand: {{ water.toFixed(1) }} g</li>
+                    <li>Salt: {{ saltG.toFixed(1) }} g</li>
+                    <li v-if="yeastG > 0">
+                        {{ yeastType === 'sourdough' ? 'Surdej' : 'Gær' }}: {{ yeastG.toFixed(2) }} g
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Fermenteringskort -->
+            <div class="card p-4 shadow-sm mb-4">
+                <h2>Fermentering</h2>
+                <div class="accordion" id="fermAccordion">
+
+                                <!-- BIGA -->
+                <div class="accordion-item">
+                <h2 class="accordion-header" id="hdrBiga">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cBiga">
+                    100 % Biga 
+                    </button>
+                </h2>
+                <div id="cBiga" class="accordion-collapse collapse" data-bs-parent="#fermAccordion">
+                    <div class="accordion-body">
+                    <ol class="mb-0">
+                        
+                        <li>
+                        Dag 1: Bland {{ flour.toFixed(1) }} g mel + ({{ (flour * 0.50).toFixed(1) }} g) vand
+                        + <span v-if="yeastType!=='sourdough'">{{ yeastG.toFixed(2) }} g gær</span>
+                            <span v-else>{{ yeastG.toFixed(1) }} g surdej</span>
+                        → smulrende biga
+                        </li>
+                        <li>Hæv <strong>4 t ved stue temp.</strong></li>
+                        <li>
+                        Dag 2: Opløs biga i {{ (water - (flour * 0.50)).toFixed(1) }} g vand,
+                        tilsæt <strong>{{ saltG.toFixed(1) }} g salt (3%)</strong>, ælt til stærk dej, uden at den bliver for varm.
+                        </li>
+                        <li>Bulk 1 t</li>
+                        <li>Del i kugler, hæv 30-60 min. Herefter direkte på køl, eller hæv videre til dobbelt størrelse og bag samme dag</li>
+                        <li>Dag 3: Ud fra køl ca. 30 min før bagning.</li>
+                    </ol>
+                    </div>
+                </div>
+                </div>
+
+                <!-- POOLISH -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="hdrPoolish">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cPoolish">
+                        Poolish 
+                    </button>
+                    </h2>
+                    <div id="cPoolish" class="accordion-collapse collapse" data-bs-parent="#fermAccordion">
+                    <div class="accordion-body">
+                        <ul class="mb-2">
+                        <li>Poolish: <strong>mel:vand = 1:1</strong> (100% hydrering)</li>
+                        <li>Mængde: <strong>30–50%</strong> af total mel</li>
+                        <li>Gær: <strong>0,05–0,2%</strong> (8–12 t ved 20–22 °C) – eller brug flydende surdej</li>
+                        <li>Salt: <strong>3%</strong> af samlet mel (i hoveddejen)</li>
+                        </ul>
+                        <ol class="mb-0">
+                        <li>Rør mel + vand (1:1) + gær/surdej</li>
+                        <li>Hæv <strong>8–12 t</strong> ved 20–22 °C (bobler, før kollaps)</li>
+                        <li>Bland poolish + resten af melet/vandet, tilsæt <strong>salt</strong>, ælt til glutenudviklet</li>
+                        <li>Bulk 1–2 t (fold), <strong>køl 12–48 t</strong> eller opspænd</li>
+                        <li>Del/opsæt kugler, slutproof 2–6 t → bag</li>
+                        </ol>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- DIREKTE -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="hdrDirekte">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cDirekte">
+                        Direkte dej 
+                    </button>
+                    </h2>
+                    <div id="cDirekte" class="accordion-collapse collapse" data-bs-parent="#fermAccordion">
+                    <div class="accordion-body">
+                        <ul class="mb-2">
+                        <li>Gær/surdej: brug dine faste satser (tør <strong>0,10%</strong> / frisk <strong>0,25%</strong> / surdej <strong>150 g/kg</strong>)</li>
+                        <li>Salt: <strong>3%</strong></li>
+                        </ul>
+                        <ol class="mb-0">
+                        <li>Bland mel + ~90% vand + gær/surdej, kør sammen</li>
+                        <li>Tilsæt <strong>salt</strong> og restvand gradvist; ælt til stærk dej (22–24 °C)</li>
+                        <li>Bulk <strong>1–3 t</strong> (fold efter behov)</li>
+                        <li><strong>Køl 12–48 t</strong> (anbefalet) eller del/opsæt direkte</li>
+                        <li>Del/opsæt kugler, slutproof 1–4 t → bag</li>
+                        </ol>
+                    </div>
+                    </div>
+                </div>
+
+                </div>
+            </div>
+            
+            
+
+        </div>
+        
+        <!-- 
         <h3>Pr. dejkugle</h3>
         <ul>
             <li>Mel: {{ (flour / n).toFixed(1) }} g</li>
@@ -68,8 +199,152 @@
                 {{ yeastType === 'sourdough' ? 'Surdej' : 'Gær' }}: {{ (yeastG / n).toFixed(2) }} g
             </li>
         </ul>
-    </div>
+         -->
+    
+        <!-- Panel: Info/vejledning -->
+        <div v-show="activeTab==='info'">
+            <div class="accordion" id="infoAccordion">
+                <div class="accordion-item">
+                <h2 class="accordion-header" id="hdrSize">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#cSize">
+                    Størrelse (13″ / 16″ / 18″)
+                    </button>
+                </h2>
+                <div id="cSize" class="accordion-collapse collapse show" data-bs-parent="#infoAccordion">
+                    <div class="accordion-body">
+                    Valget styrer dejkuglevægten (standard: 13″≈260 g, 16″≈340 g, 18″≈500 g).
+                    </div>
+                </div>
+                </div>
 
+                <div class="accordion-item">
+                <h2 class="accordion-header" id="hdrHyd">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cHyd">
+                    Hydrering (%)
+                    </button>
+                </h2>
+                <div id="cHyd" class="accordion-collapse collapse" data-bs-parent="#infoAccordion">
+                    <div class="accordion-body">
+                    Vand i % af mel. Højere hydrering = mere åben crumb, men sværere håndtering. Typisk 60–65% for klassisk napolitansk pizza.
+                    </div>
+                </div>
+                </div>
+
+                <div class="accordion-item">
+                <h2 class="accordion-header" id="hdrLeaven">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cLeaven">
+                    Hævemiddel (tør, frisk, surdej)
+                    </button>
+                </h2>
+                <div id="cLeaven" class="accordion-collapse collapse" data-bs-parent="#infoAccordion">
+                    <div class="accordion-body">
+                    Tørgær = 0,10% af mel. Frisk gær = 0,25% af mel. Surdej = 150 g pr. 1000 g mel (15%). Koldhævning kræver typisk lavere gærmængder.
+                    </div>
+                </div>
+                </div>
+
+                <div class="accordion-item">
+                <h2 class="accordion-header" id="hdrSalt">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cSalt">
+                    Salt (fast 30 g/kg mel)
+                    </button>
+                </h2>
+                <div id="cSalt" class="accordion-collapse collapse" data-bs-parent="#infoAccordion">
+                    <div class="accordion-body">
+                    3% af mel. Smag, struktur og glutenstyrke påvirkes af salt. Hold det konstant for konsistente resultater.
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-show="activeTab==='ferment'">
+
+            <!-- BIGA -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="hdrBiga">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cBiga">
+                    Biga (stiv fordej, 45–55% hydrering)
+                </button>
+                </h2>
+                <div id="cBiga" class="accordion-collapse collapse show" data-bs-parent="#fermAccordion">
+                <div class="accordion-body">
+                    <ul class="mb-2">
+                    <li>Hydrering i biga: <strong>45–55%</strong></li>
+                    <li>Al mel i biga <em>eller</em> 70–80% i biga</li>
+                    <li>Gær: <strong>0,05–0,2%</strong> (18–20 °C, 16–20 t) – eller brug surdej (150 g/kg mel)</li>
+                    <li>Salt: <strong>3%</strong> af samlet mel (tilsættes i hoveddejen)</li>
+                    </ul>
+                    <ol class="mb-0">
+                    <li>Bland mel + (45–55%) vand + minimal gær/surdej → smulrende biga</li>
+                    <li>Hæv <strong>16–20 t</strong> ved 18–20 °C til luftig</li>
+                    <li>Næste dag: opløs biga i vand, tilsæt <strong>salt (3%)</strong>, ælt til stærk dej</li>
+                    <li>Bulk 1–2 t (fold), så <strong>køl 12–48 t</strong> eller opspænd direkte</li>
+                    <li>Del/opsæt kugler, slutproof 2–6 t → bag</li>
+                    </ol>
+                </div>
+                </div>
+            </div>
+
+            <!-- POOLISH -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="hdrPoolish">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cPoolish">
+                    Poolish (flydende fordej, 1:1)
+                </button>
+                </h2>
+                <div id="cPoolish" class="accordion-collapse collapse" data-bs-parent="#fermAccordion">
+                <div class="accordion-body">
+                    <ul class="mb-2">
+                    <li>Poolish: <strong>mel:vand = 1:1</strong> (100% hydrering)</li>
+                    <li>Mængde: <strong>30–50%</strong> af total mel</li>
+                    <li>Gær: <strong>0,05–0,2%</strong> (8–12 t ved 20–22 °C) – eller brug flydende surdej</li>
+                    <li>Salt: <strong>3%</strong> af samlet mel (i hoveddejen)</li>
+                    </ul>
+                    <ol class="mb-0">
+                    <li>Rør mel + vand (1:1) + gær/surdej</li>
+                    <li>Hæv <strong>8–12 t</strong> ved 20–22 °C (bobler, før kollaps)</li>
+                    <li>Bland poolish + resten af melet/vandet, tilsæt <strong>salt</strong>, ælt til glutenudviklet</li>
+                    <li>Bulk 1–2 t (fold), <strong>køl 12–48 t</strong> eller opspænd</li>
+                    <li>Del/opsæt kugler, slutproof 2–6 t → bag</li>
+                    </ol>
+                </div>
+                </div>
+            </div>
+
+            <!-- DIREKTE -->
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="hdrDirekte">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cDirekte">
+                    Direkte dej (ingen fordej)
+                </button>
+                </h2>
+                <div id="cDirekte" class="accordion-collapse collapse" data-bs-parent="#fermAccordion">
+                <div class="accordion-body">
+                    <ul class="mb-2">
+                    <li>Gær/surdej: brug dine faste satser (tør <strong>0,10%</strong> / frisk <strong>0,25%</strong> / surdej <strong>150 g/kg</strong>)</li>
+                    <li>Salt: <strong>3%</strong></li>
+                    </ul>
+                    <ol class="mb-0">
+                    <li>Bland mel + ~90% vand + gær/surdej, kør sammen</li>
+                    <li>Tilsæt <strong>salt</strong> og restvand gradvist; ælt til stærk dej (22–24 °C)</li>
+                    <li>Bulk <strong>1–3 t</strong> (fold efter behov)</li>
+                    <li><strong>Køl 12–48 t</strong> (anbefalet) eller del/opsæt direkte</li>
+                    <li>Del/opsæt kugler, slutproof 1–4 t → bag</li>
+                    </ol>
+                </div>
+                </div>
+            </div>    
+        </div>
+
+    
+    
+    
+    
+
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="./js/main.js"></script>
 </body>
 </html>

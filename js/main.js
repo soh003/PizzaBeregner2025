@@ -11,7 +11,8 @@ const app = Vue.createApp({
         fresh: 0.0025,      // 0,25% frisk gær
         dry: 0.001,         // 0,10% tørgær
         sourdough: 0.15     // 150 g pr. 1000 g mel = 15%
-      }
+      },
+      activeTab: 'calc',   // ← NY: styrer faner
     }
   },
   computed:{

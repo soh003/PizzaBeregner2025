@@ -11,3 +11,6 @@ label {
 input, select {
     margin-left: 5px;
 }
+.custom-hero {
+  background-color: #FAE7CF; /* Match logoets baggrundsfarve */
+}
